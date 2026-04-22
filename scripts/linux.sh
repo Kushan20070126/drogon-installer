@@ -2,6 +2,32 @@
 
 set -euo pipefail
 
+ONLY_DEPS=0
+SKIP_BUILD=0
+VERBOSE=0
+
+for arg in "$@"; do
+  case "$arg" in
+    --only-deps)
+      ONLY_DEPS=1
+      ;;
+    --skip-build)
+      SKIP_BUILD=1
+      ;;
+    --verbose)
+      VERBOSE=1
+      ;;
+    *)
+      echo "[linux] ERROR: Unknown argument: $arg" >&2
+      exit 1
+      ;;
+  esac
+done
+
+if [ "$VERBOSE" -eq 1 ]; then
+  set -x
+fi
+
 log() {
   echo "[linux] $1"
 }
@@ -23,6 +49,11 @@ sudo apt-get update
 log "Installing build dependencies..."
 sudo apt-get install -y git cmake g++ libssl-dev uuid-dev
 
+if [ "$ONLY_DEPS" -eq 1 ]; then
+  log "Dependency-only mode enabled. Skipping repository clone and build."
+  exit 0
+fi
+
 mkdir -p "$BUILD_ROOT"
 
 if [ -d "$SOURCE_DIR/.git" ]; then
@@ -36,6 +67,11 @@ fi
 
 log "Initializing git submodules..."
 git -C "$SOURCE_DIR" submodule update --init --recursive
+
+if [ "$SKIP_BUILD" -eq 1 ]; then
+  log "Skip-build mode enabled. Dependencies and source setup completed."
+  exit 0
+fi
 
 log "Configuring build with CMake..."
 mkdir -p "$BUILD_DIR"
