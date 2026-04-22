@@ -25,8 +25,43 @@ drogon-installer/
 From the project root:
 
 ```bash
-python3 install.py
+python3 install.py --help
 ```
+
+### Install Drogon
+
+```bash
+python3 install.py install
+python3 install.py install --only-deps
+python3 install.py install --skip-build
+python3 install.py install --verbose
+```
+
+### Create Project
+
+```bash
+python3 install.py create myapp
+```
+
+### Build Release Artifacts
+
+```bash
+# Build host-compatible release artifacts into ./release
+python3 install.py release --version v1 --output-dir ./release
+
+# Build only Linux deb package
+python3 install.py release --version v1 --targets deb --output-dir ./release
+```
+
+## GitHub Actions Release Automation
+
+- Workflow file: `.github/workflows/release.yml`
+- Trigger on push to `main`, tag push like `v1`, or manual `workflow_dispatch`.
+- Builds cross-platform artifacts automatically:
+  - `DM-<version>.exe` (Windows runner)
+  - `DM-<version>.deb` (Linux runner)
+  - `DB-<version>.dmg` (macOS runner)
+- On tag pushes (`v*`), artifacts are also attached to a GitHub Release.
 
 ## What the Installer Does
 
@@ -54,3 +89,7 @@ python3 install.py
 - The Python launcher uses only the standard library.
 - Installation scripts print step-by-step logs and fail fast on errors.
 - Linux and macOS installers require `sudo` for global installation.
+- `release` artifact naming:
+  - `DM-v1.exe` (built on Windows)
+  - `DM-v1.deb` (built on Linux)
+  - `DB-v1.dmg` (built on macOS)
