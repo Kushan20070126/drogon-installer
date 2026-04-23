@@ -6,7 +6,7 @@ A production-ready package manager for the Drogon C++ Framework. Behaves like `n
 
 ### One-line Install (Linux/macOS)
 ```bash
-curl -sS https://raw.githubusercontent.com/user/drogon-installer/main/bootstrap.sh | bash
+curl -sS https://raw.githubusercontent.com/Kushan20070126/drogon-installer/main/bootstrap.sh | bash
 ```
 
 ### Local Setup
