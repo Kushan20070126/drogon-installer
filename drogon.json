@@ -1,0 +1,8 @@
+{
+  "name": "drogon-installer",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "cmake -B build && cmake --build build && ./build/drogon-installer",
+    "build": "cmake -B build && cmake --build build"
+  }
+}

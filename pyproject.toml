@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "drogon-cli"
+version = "1.0.0"
+description = "A production-ready package manager for the Drogon C++ ecosystem"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+    { name = "Drogon Framework", email = "info@drogon.org" }
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.scripts]
+drogon = "drogon:main"
+
+[tool.setuptools]
+py-modules = ["drogon"]
+
+[tool.setuptools.package-data]
+"*" = ["scripts/*"]

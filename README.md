@@ -1,95 +1,68 @@
-# drogon-installer
+# Drogon Ecosystem CLI (`drogon`)
 
-`drogon-installer` is a simple, reproducible cross-platform CLI installer for the
-[Drogon C++ web framework](https://github.com/drogonframework/drogon).
+A production-ready package manager for the Drogon C++ Framework. Behaves like `npm` for a seamless developer experience.
 
-It detects your operating system and runs the correct install script for:
-- Linux (Debian/Ubuntu with `apt`)
-- macOS (with Homebrew)
-- Windows (with PowerShell + vcpkg)
+## Installation
 
-## Project Structure
+### One-line Install (Linux/macOS)
+```bash
+curl -sS https://raw.githubusercontent.com/user/drogon-installer/main/bootstrap.sh | bash
+```
 
-```text
-drogon-installer/
-  install.py
-  scripts/
-    linux.sh
-    macos.sh
-    windows.ps1
-  README.md
+### Local Setup
+```bash
+./bootstrap.sh
 ```
 
 ## Usage
 
-From the project root:
-
+### 1. Environment Health Check
 ```bash
-python3 install.py --help
+drogon doctor
 ```
 
-### Install Drogon
-
+### 2. Install Drogon & Dependencies
 ```bash
-python3 install.py install
-python3 install.py install --only-deps
-python3 install.py install --skip-build
-python3 install.py install --verbose
+drogon install
+drogon install --only-deps
+drogon install --skip-build
+```
+*Supports `apt`, `dnf`, `pacman` (Linux), `brew` (macOS), and `winget` (Windows).*
+
+### 3. Create a New Project
+```bash
+drogon create my_app
+cd my_app
 ```
 
-### Create Project
-
+### 4. Initialize `drogon.json`
 ```bash
-python3 install.py create myapp
+drogon init
 ```
 
-### Build Release Artifacts
-
+### 5. Run Scripts
+Scripts are defined in `drogon.json`:
+```json
+{
+  "scripts": {
+    "build": "cmake -B build && cmake --build build",
+    "dev": "drogon run build && ./build/my_app"
+  }
+}
+```
+Execute them:
 ```bash
-# Build host-compatible release artifacts into ./release
-python3 install.py release --version v1 --output-dir ./release
-
-# Build only Linux deb package
-python3 install.py release --version v1 --targets deb --output-dir ./release
+drogon run build
+drogon run dev
 ```
 
-## GitHub Actions Release Automation
+## Architecture
+- **Home Directory**: `~/.drogon/`
+- **Cache**: `~/.drogon/cache/` (Drogon source and builds)
+- **Configuration**: `drogon.json` (Per-project scripts and metadata)
+- **Logs**: `~/.drogon/logs/`
 
-- Workflow file: `.github/workflows/release.yml`
-- Trigger on push to `main`, tag push like `v1`, or manual `workflow_dispatch`.
-- Builds cross-platform artifacts automatically:
-  - `DM-<version>.exe` (Windows runner)
-  - `DM-<version>.deb` (Linux runner)
-  - `DB-<version>.dmg` (macOS runner)
-- On tag pushes (`v*`), artifacts are also attached to a GitHub Release.
-
-## What the Installer Does
-
-### Linux (`scripts/linux.sh`)
-- Installs dependencies with `apt`: `git`, `cmake`, `g++`, `libssl-dev`, `uuid-dev`
-- Clones (or updates) the Drogon repository
-- Initializes submodules
-- Builds Drogon with CMake
-- Installs Drogon globally
-
-### macOS (`scripts/macos.sh`)
-- Installs dependencies with Homebrew: `git`, `cmake`, `openssl`
-- Clones (or updates) the Drogon repository
-- Initializes submodules
-- Builds Drogon with CMake
-- Installs Drogon globally
-
-### Windows (`scripts/windows.ps1`)
-- Checks for `vcpkg` in `PATH`
-- If missing, prints setup instructions and exits with an error
-- Installs Drogon via `vcpkg install drogon:x64-windows` (or uses `VCPKG_DEFAULT_TRIPLET`)
-
-## Notes
-
-- The Python launcher uses only the standard library.
-- Installation scripts print step-by-step logs and fail fast on errors.
-- Linux and macOS installers require `sudo` for global installation.
-- `release` artifact naming:
-  - `DM-v1.exe` (built on Windows)
-  - `DM-v1.deb` (built on Linux)
-  - `DB-v1.dmg` (built on macOS)
+## Platform Support
+- **Linux**: Debian/Ubuntu, Fedora/RHEL, Arch Linux.
+- **macOS**: via Homebrew.
+- **Windows**: via Winget and Visual Studio Build Tools.
