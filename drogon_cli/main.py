@@ -154,14 +154,9 @@ def handle_run(args: argparse.Namespace) -> None:
 
 
 def get_scripts_dir() -> Path:
-    """Find the 'scripts' directory relative to the installer's location."""
-    # When installed via pip, scripts might be in the package data
-    base_path = Path(__file__).resolve().parent
-    scripts_dir = base_path / "scripts"
-    if scripts_dir.exists():
-        return scripts_dir
-    # Fallback if scripts are packaged inside an Egg or Zip (less common now but good to have)
-    return base_path
+    """Find the 'scripts' directory inside the package."""
+    # This works regardless of whether installed via pip/uv or run locally
+    return Path(__file__).resolve().parent / "scripts"
 
 def handle_install(args: argparse.Namespace) -> None:
     """Install Drogon and its dependencies."""
@@ -188,23 +183,9 @@ def handle_install(args: argparse.Namespace) -> None:
 
     command = base_cmd + [str(script_path)]
     
-    # ... rest of handle_install ...
-    
-    # Pass flags to script
-    env_vars = os.environ.copy()
-    env_vars["BUILD_ROOT"] = str(CACHE_DIR)
-    
-    if system_name == "Windows":
-        if args.only_deps: command.append("-OnlyDeps")
-        if args.skip_build: command.append("-SkipBuild")
-        if args.verbose: command.append("-VerboseMode")
-    else:
-        if args.only_deps: command.append("--only-deps")
-        if args.skip_build: command.append("--skip-build")
-        if args.verbose: command.append("--verbose")
-
     log(f"Starting install via {script_name}...")
-    run_command(command, cwd=project_root, args=args)
+    # Use cwd=DROGON_HOME to ensure we aren't restricted by the package's read-only location
+    run_command(command, cwd=DROGON_HOME, args=args)
     log("Installation complete.")
 
 
